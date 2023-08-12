@@ -4,7 +4,7 @@
 
 A pacakage to be used for image input in flutter.
 
-<!-- ![image_input_example](./video/image_input.gif/?raw=true) -->
+![image_input_example](./video/image_input.gif/?raw=true)
 
 ## Getting Started
 
