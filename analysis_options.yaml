@@ -1,0 +1,30 @@
+linter:
+  rules:
+    - always_use_package_imports
+    - avoid_empty_else
+    - avoid_print
+    - avoid_relative_lib_imports
+    - avoid_returning_null_for_future
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - avoid_types_as_parameter_names
+    - avoid_web_libraries_in_flutter
+    - cancel_subscriptions
+    - close_sinks
+    - collection_methods_unrelated_type
+    - comment_references
+    - control_flow_in_finally
+    - curly_braces_in_flow_control_structures
+    - use_rethrow_when_possible
+    - always_declare_return_types
+    - only_throw_errors
+    - prefer_asserts_in_initializer_lists
+    - prefer_asserts_with_message
+    - use_enums
+    - avoid_catching_errors
+    - avoid_positional_boolean_parameters
+    - sort_pub_dependencies
+    - prefer_generic_function_type_aliases
+    - use_colored_box
+    - use_full_hex_values_for_flutter_colors
+    - prefer_const_constructors
