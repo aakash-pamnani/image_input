@@ -16,19 +16,9 @@ class ImageInput extends StatefulWidget {
     this.imageSize = const Size(100, 100),
     this.imageSpacing = 10,
     this.addImageIcon = const Icon(Icons.camera_alt_outlined),
-    this.addImageContainerDecoration = const BoxDecoration(
-      color: Colors.grey,
-      borderRadius: BorderRadius.all(
-        Radius.circular(10),
-      ),
-    ),
+    this.addImageContainerDecoration,
     this.removeImageIcon = const Icon(Icons.close),
-    this.imageContainerDecoration = const BoxDecoration(
-      color: Colors.grey,
-      borderRadius: BorderRadius.all(
-        Radius.circular(10),
-      ),
-    ),
+    this.imageContainerDecoration,
     this.onImageSelected,
     this.onImageRemoved,
     this.initialImages,
@@ -58,13 +48,13 @@ class ImageInput extends StatefulWidget {
   final Widget addImageIcon;
 
   /// The decoration of add image container.
-  final BoxDecoration addImageContainerDecoration;
+  final BoxDecoration? addImageContainerDecoration;
 
   /// The icon to display when the user can remove the image.
   final Widget removeImageIcon;
 
   /// The decoration of image container.
-  final BoxDecoration imageContainerDecoration;
+  final BoxDecoration? imageContainerDecoration;
 
   /// Called when the image selected by user.
   final void Function(XFile image, int index)? onImageSelected;
@@ -94,6 +84,13 @@ class ImageInput extends StatefulWidget {
 
 class _ImageInputState extends State<ImageInput> {
   List<XFile> _images = [];
+
+  final defaultDecoration = BoxDecoration(
+    color: Colors.grey[300],
+    borderRadius: const BorderRadius.all(
+      Radius.circular(10),
+    ),
+  );
 
   @override
   void initState() {
@@ -150,7 +147,7 @@ class _ImageInputState extends State<ImageInput> {
         child: Container(
           height: widget.imageSize.height,
           width: widget.imageSize.width,
-          decoration: widget.addImageContainerDecoration,
+          decoration: widget.addImageContainerDecoration ?? defaultDecoration,
           child: Center(
             child: widget.addImageIcon,
           ),
@@ -164,7 +161,7 @@ class _ImageInputState extends State<ImageInput> {
 
     for (var i = 0; i < _images.length; i++) {
       ImageProvider<Object>? imageProvider =
-          getImage(null, _images[i].path, widget.onImageError);
+          getImage(_images[i], _images[i].path, widget.onImageError);
       imagesContainer.add(
         Stack(
           children: [
@@ -178,6 +175,12 @@ class _ImageInputState extends State<ImageInput> {
                         images: _images,
                         initialIndex: i,
                         isEdit: widget.allowEdit,
+                        onImageDeleted: (image, index) {
+                          setState(() {
+                            widget.onImageRemoved?.call(image, index);
+                            _images.removeAt(index);
+                          });
+                        },
                       );
                     },
                   ),
@@ -186,7 +189,8 @@ class _ImageInputState extends State<ImageInput> {
               child: Container(
                 height: widget.imageSize.height,
                 width: widget.imageSize.width,
-                decoration: widget.imageContainerDecoration,
+                decoration:
+                    widget.imageContainerDecoration ?? defaultDecoration,
                 child: Center(
                   child: imageProvider != null
                       ? Image(

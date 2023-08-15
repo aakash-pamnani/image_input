@@ -1,4 +1,3 @@
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image_input/widget/getImage/getImage.dart';
@@ -10,10 +9,12 @@ class ImagePreview extends StatefulWidget {
     required this.images,
     required this.initialIndex,
     required this.isEdit,
+    required this.onImageDeleted,
   });
   final List<XFile> images;
   final int initialIndex;
   final bool isEdit;
+  final void Function(XFile image, int index) onImageDeleted;
 
   @override
   State<ImagePreview> createState() => _ImagePreviewState();
@@ -22,6 +23,7 @@ class ImagePreview extends StatefulWidget {
 class _ImagePreviewState extends State<ImagePreview>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  late PageController _pageController;
   bool showHeaderFooter = true;
   int currentIndex = 0;
 
@@ -32,6 +34,7 @@ class _ImagePreviewState extends State<ImagePreview>
       duration: const Duration(milliseconds: 300),
     );
     currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
     super.initState();
   }
 
@@ -66,7 +69,7 @@ class _ImagePreviewState extends State<ImagePreview>
                     currentIndex = value;
                   });
                 },
-                controller: PageController(initialPage: widget.initialIndex),
+                controller: _pageController,
                 itemBuilder: (context, index) {
                   ImageProvider<Object>? imageProvider = getImage(
                       widget.images[index],
@@ -94,8 +97,34 @@ class _ImagePreviewState extends State<ImagePreview>
                 width: MediaQuery.of(context).size.width,
                 color: Colors.black.withOpacity(0.5),
                 child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    int deletedIndex = currentIndex;
+                    if (currentIndex > 0) {
+                      _pageController.animateToPage(currentIndex - 1,
+                          duration: const Duration(
+                            milliseconds: 300,
+                          ),
+                          curve: Curves.easeIn);
+                    } 
+                    // else if (widget.images.length > 1) {
+                    //   _pageController.animateToPage(currentIndex - 1,
+                    //       duration: const Duration(
+                    //         milliseconds: 300,
+                    //       ),
+                    //       curve: Curves.easeIn);
+                    // }
+                    await Future.delayed(
+                      const Duration(milliseconds: 400),
+                      () => setState(
+                        () {
+                          widget.onImageDeleted
+                              .call(widget.images[deletedIndex], deletedIndex);
+                          if (widget.images.isEmpty) {
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                    );
                   },
                   icon: const Icon(
                     Icons.delete,

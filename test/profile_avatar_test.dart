@@ -4,7 +4,6 @@ import 'package:image_input/widget/profile_avatar.dart';
 
 void main() {
   testWidgets('Profile Avatar allowEdit test', (tester) async {
-    // Test code goes here.
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
