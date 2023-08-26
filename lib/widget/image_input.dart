@@ -84,6 +84,7 @@ class ImageInput extends StatefulWidget {
 
 class _ImageInputState extends State<ImageInput> {
   List<XFile> _images = [];
+  ValueNotifier<List<XFile>>? imageChangeNotifier;
 
   final defaultDecoration = BoxDecoration(
     color: Colors.grey[300],
@@ -103,7 +104,7 @@ class _ImageInputState extends State<ImageInput> {
   }
 
   @override
-  void didUpdateWidget(covariant ImageInput oldWidget) {
+  void didUpdateWidget(ImageInput oldWidget) {
     if (oldWidget.initialImages != widget.initialImages) {
       _images = widget.initialImages ?? [];
     }
@@ -112,6 +113,9 @@ class _ImageInputState extends State<ImageInput> {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      imageChangeNotifier?.value = _images;
+    });
     return Wrap(
       spacing: widget.imageSpacing,
       runSpacing: widget.imageSpacing,
@@ -137,9 +141,9 @@ class _ImageInputState extends State<ImageInput> {
           )
               .then((value) {
             if (value != null) {
-              setState(() {
-                _images.add(value);
-              });
+              // setState(() {
+              //   _images.add(value);
+              // });
               widget.onImageSelected?.call(value, _images.length - 1);
             }
           });
@@ -167,24 +171,25 @@ class _ImageInputState extends State<ImageInput> {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.push(
+                imageChangeNotifier = ValueNotifier(_images);
+                Navigator.push<List<XFile>>(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
                       return ImagePreview(
-                        images: _images,
+                        imageNotifier: imageChangeNotifier!,
                         initialIndex: i,
                         isEdit: widget.allowEdit,
-                        onImageDeleted: (image, index) {
-                          setState(() {
-                            widget.onImageRemoved?.call(image, index);
-                            _images.removeAt(index);
-                          });
-                        },
+                        onImageDeleted: widget.onImageRemoved,
+                        // setState(() {
+                        //   _images.removeAt(index);
+                        // });
                       );
                     },
                   ),
-                );
+                ).then((value) {
+                  imageChangeNotifier = null;
+                });
               },
               child: Container(
                 height: widget.imageSize.height,
@@ -209,10 +214,10 @@ class _ImageInputState extends State<ImageInput> {
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        widget.onImageRemoved?.call(_images[i], i);
-                        _images.removeAt(i);
-                      });
+                      widget.onImageRemoved?.call(_images[i], i);
+                      // setState(() {
+                      //   _images.removeAt(i);
+                      // });
                     },
                     child: widget.removeImageIcon,
                   ),

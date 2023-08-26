@@ -13,7 +13,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Image INput'),
+          title: const Text('Image Input'),
         ),
         body: const AddPerson(),
       ),
@@ -21,9 +21,16 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class AddPerson extends StatelessWidget {
+class AddPerson extends StatefulWidget {
   const AddPerson({super.key});
 
+  @override
+  State<AddPerson> createState() => _AddPersonState();
+}
+
+class _AddPersonState extends State<AddPerson> {
+  List<XFile> images = [];
+  XFile? profileImage = XFile('path/to/your/file');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +46,7 @@ class AddPerson extends StatelessWidget {
             radius: 100,
             allowEdit: true,
             backgroundColor: Colors.grey,
+            image: profileImage,
             addImageIcon: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
@@ -65,18 +73,35 @@ class AddPerson extends StatelessWidget {
               //save image to local storage and get the path
               String? tempPath = image?.path;
               print(tempPath);
+              setState(() {
+                profileImage = image!;
+              });
+            },
+            onImageRemoved: () {
+              setState(() {
+                profileImage = null;
+              });
             },
           ),
           Center(
             child: ImageInput(
               allowEdit: true,
               allowMaxImage: 5,
+              initialImages: images,
               onImageSelected: (image, index) {
                 //save image to cloud and get the url
                 //or
                 //save image to local storage and get the path
                 String? tempPath = image.path;
                 print(tempPath);
+                setState(() {
+                  images.add(image);
+                });
+              },
+              onImageRemoved: (image, index) {
+                setState(() {
+                  images.removeAt(index);
+                });
               },
             ),
           ),

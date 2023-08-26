@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 ///
 /// If [allowEdit] is true, the user will be able to change the image.
 ///
+
 class ProfileAvatar extends StatefulWidget {
   const ProfileAvatar({
     super.key,
@@ -90,11 +91,17 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
   }
 
   @override
-  void didUpdateWidget(covariant ProfileAvatar oldWidget) {
+  void didUpdateWidget(ProfileAvatar oldWidget) {
     if (oldWidget.image != widget.image) {
       image = widget.image;
     }
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    image = null;
+    super.dispose();
   }
 
   @override
@@ -122,9 +129,9 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                   child: GestureDetector(
                     onTap: () {
                       widget.onImageRemoved?.call();
-                      setState(() {
-                        image = null;
-                      });
+                      // setState(() {
+                      //   image = null;
+                      // });
                     },
                     child: widget.removeImageIcon,
                   ),
@@ -150,9 +157,11 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                           .then<void>(
                         (XFile? value) {
                           widget.onImageChanged?.call(value);
-                          setState(() {
-                            image = value;
-                          });
+                          // setState(() {
+                          //   if (value != null) {
+                          //     image = value;
+                          //   }
+                          // });
                         },
                       );
                     },
