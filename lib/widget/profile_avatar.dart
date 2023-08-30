@@ -71,12 +71,12 @@ class ProfileAvatar extends StatefulWidget {
   ///
   /// If null, the user will be prompted to select an image from the gallery.
   ///
-  final ImageSource Function()? getImageSource;
+  final Future<ImageSource> Function()? getImageSource;
 
   /// Called when the user clicks the [addImageIcon] and [getImageSource] is [ImageSource.camera].
   ///
   /// If null by default [CameraDevice.front] will be used.
-  final CameraDevice Function()? getPreferredCameraDevice;
+  final Future<CameraDevice> Function()? getPreferredCameraDevice;
 
   @override
   State<ProfileAvatar> createState() => _ProfileAvatarState();
@@ -147,10 +147,10 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                       final ImagePicker picker = ImagePicker();
                       await picker
                           .pickImage(
-                        source: widget.getImageSource?.call() ??
+                        source: await widget.getImageSource?.call() ??
                             ImageSource.gallery,
                         preferredCameraDevice:
-                            widget.getPreferredCameraDevice?.call() ??
+                            await widget.getPreferredCameraDevice?.call() ??
                                 CameraDevice.front,
                         imageQuality: 50,
                       )

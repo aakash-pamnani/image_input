@@ -1,6 +1,6 @@
 name: image_input
 description: A pacakage to be used for image input in flutter. It can be used to take image from camera or gallery or from a url.
-version: 0.0.3-beta
+version: 0.0.2
 homepage: 'https://github.com/aakash-pamnani/image_input'
 repository: https://github.com/aakash-pamnani/image_input
 issue_tracker: https://github.com/aakash-pamnani/image_input/issues

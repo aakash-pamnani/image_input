@@ -68,12 +68,12 @@ class ImageInput extends StatefulWidget {
   ///
   /// If null, the user will be prompted to select an image from the gallery.
   ///
-  final ImageSource Function()? getImageSource;
+  final Future<ImageSource> Function()? getImageSource;
 
   /// Called when the user clicks the [addImageIcon] and [getImageSource] is [ImageSource.camera].
   ///
   /// If null by default [CameraDevice.front] will be used.
-  final CameraDevice Function()? getPreferredCameraDevice;
+  final Future<CameraDevice> Function()? getPreferredCameraDevice;
 
   /// Called when the image fails to load.
   final onError? onImageError;
@@ -132,12 +132,12 @@ class _ImageInputState extends State<ImageInput> {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           ImagePicker()
               .pickImage(
-            source: widget.getImageSource?.call() ?? ImageSource.gallery,
+            source: await widget.getImageSource?.call() ?? ImageSource.gallery,
             preferredCameraDevice:
-                widget.getPreferredCameraDevice?.call() ?? CameraDevice.rear,
+                await widget.getPreferredCameraDevice?.call() ?? CameraDevice.rear,
           )
               .then((value) {
             if (value != null) {
