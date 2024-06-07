@@ -1,3 +1,5 @@
+## 0.0.3
+* Bug fixes and parameter name changes.
 ## 0.0.2
 * Added Export of InputSource and CameraDevice from image_picker package
 ## 0.0.1

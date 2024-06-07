@@ -1,26 +1,26 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:octo_image/octo_image.dart';
 
-ImageProvider? getImageWeb(
-  String? imageUrl,
-  void Function(Object exception, StackTrace? stackTrace)? onImageError,
-) {
-  try {
- if (imageUrl != null) {
-      return CachedNetworkImageProvider(
-        imageUrl,
-      );
-    } else {
-      onImageError?.call(
-        Exception('Platform not supported'),
-        StackTrace.current,
-      );
-    }
-  } catch (e) {
-    onImageError?.call(
-      e,
-      StackTrace.current,
-    );
-  }
-  return null;
-}
+// Widget? getImageWeb(
+//   String? imageUrl,
+//   OctoProgressIndicatorBuilder? loadingBuilder,
+//   ImageErrorWidgetBuilder? errorBuilder,
+// ) {
+//   try {
+//     if (imageUrl != null) {
+//       return OctoImage(
+//         image: CachedNetworkImageProvider(
+//           imageUrl,
+//         ),
+//         errorBuilder: errorBuilder,
+//         fit: BoxFit.cover,
+//         progressIndicatorBuilder: loadingBuilder,
+//       );
+//     } else {
+//       return null;
+//     }
+//   } catch (e) {
+//     rethrow;
+//   }
+// }
