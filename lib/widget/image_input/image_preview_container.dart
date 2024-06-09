@@ -4,7 +4,9 @@ class ImagePreviewContainer extends StatefulWidget {
   const ImagePreviewContainer({
     super.key,
     required this.image,
+    this.loadingBuilder,
     required this.index,
+    required this.fit,
     required this.allowEdit,
     required this.imageSize,
     required this.onImageRemoved,
@@ -14,6 +16,7 @@ class ImagePreviewContainer extends StatefulWidget {
   });
 
   final int index;
+  final OctoProgressIndicatorBuilder? loadingBuilder;
   final bool allowEdit;
   final Size imageSize;
   final Function(XFile, int)? onImageRemoved;
@@ -21,6 +24,7 @@ class ImagePreviewContainer extends StatefulWidget {
   final XFile? image;
   final Widget removeImageIcon;
   final Function? onTap;
+  final BoxFit fit;
 
   @override
   State<ImagePreviewContainer> createState() => _ImagePreviewContainerState();
@@ -41,19 +45,25 @@ class _ImagePreviewContainerState extends State<ImagePreviewContainer> {
     imageProvider = getImageProvider(
       widget.image,
       "",
+      scale: 0.5,
     );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (imageProvider != null) {
+        // await precacheImage(imageProvider!, context);
+      }
+    });
+
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant ImagePreviewContainer oldWidget) {
-    if (widget.image != oldWidget.image) {
-      imageProvider = getImageProvider(
-        widget.image,
-        "",
-      );
-    }
     super.didUpdateWidget(oldWidget);
+    // precacheImage(imageProvider!, context);
+
+    if (widget.image != oldWidget.image) {
+      imageProvider = getImageProvider(widget.image, "", scale: 0.5);
+    }
   }
 
   @override
@@ -75,7 +85,13 @@ class _ImagePreviewContainerState extends State<ImagePreviewContainer> {
                   ? const SizedBox.shrink()
                   : OctoImage(
                       image: imageProvider!,
-                    ),
+                      memCacheWidth: 500,
+                      fit: widget.fit,
+                      progressIndicatorBuilder: (context, progress) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }),
             ),
           ),
         ),

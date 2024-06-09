@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:image_input/widget/getImage/get_image.dart';
+import 'package:image_input/util/get_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:octo_image/octo_image.dart';
 
@@ -10,10 +10,12 @@ class ImagePreview extends StatefulWidget {
     required this.images,
     required this.initialIndex,
     required this.isEdit,
+    this.loadingBuilder,
     this.onImageDeleted,
   });
   final ValueNotifier<List<XFile>> images;
   final int initialIndex;
+  final OctoProgressIndicatorBuilder? loadingBuilder;
   final bool isEdit;
   final void Function(XFile image, int index)? onImageDeleted;
 
@@ -98,9 +100,13 @@ class _ImagePreviewState extends State<ImagePreview>
                       return Center(
                         child: imageProvider != null
                             ? InteractiveViewer(
+                                clipBehavior: Clip.none,
                                 child: OctoImage(
                                   image: imageProvider,
-                                  fit: BoxFit.fitWidth,
+                                  memCacheWidth: 1000,
+                                  progressIndicatorBuilder:
+                                      widget.loadingBuilder,
+                                  // fit: BoxFit.fitWidth,
                                 ),
                               )
                             : const SizedBox(),

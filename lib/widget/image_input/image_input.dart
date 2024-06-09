@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_input/widget/getImage/get_image.dart';
+import 'package:image_input/util/get_image.dart';
+import 'package:image_input/util/image_picker_util.dart';
 import 'package:image_input/widget/image_input/image_preview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:octo_image/octo_image.dart';
@@ -17,9 +18,11 @@ class ImageInput extends StatefulWidget {
   const ImageInput({
     super.key,
     this.allowMaxImage = 1,
+    this.loadingBuilder,
     this.imageSize = const Size(100, 100),
     this.spacing = 10,
     this.runSpacing = 10,
+    this.fit = BoxFit.cover,
     this.addImageIcon = const Icon(Icons.camera_alt_outlined),
     this.addImageContainerDecoration,
     this.removeImageIcon = const Icon(Icons.close),
@@ -49,6 +52,16 @@ class ImageInput extends StatefulWidget {
   /// The size of the image to display.
   final Size imageSize;
 
+  /// This builder will be used to show a widget while the image is loading.
+  ///
+  /// Example:
+  /// ```dart
+  /// (context, progress) {
+  ///   return CircularProgressIndicator();
+  /// }
+  /// ```
+  final OctoProgressIndicatorBuilder? loadingBuilder;
+
   /// The spacing between the images.
   final double spacing;
 
@@ -70,7 +83,7 @@ class ImageInput extends StatefulWidget {
   final BoxDecoration? imageContainerDecoration;
 
   /// Called when the image selected by user.
-  final void Function(XFile image, int index)? onImageSelected;
+  final OnImageChanged? onImageSelected;
 
   /// Called when the image is removed.
   final void Function(XFile image, int index)? onImageRemoved;
@@ -81,15 +94,20 @@ class ImageInput extends StatefulWidget {
   ///
   /// If null, the user will be prompted to select an image from the gallery.
   ///
-  final Future<ImageSource> Function()? getImageSource;
+  final GetImageSource? getImageSource;
 
   /// Called when the user clicks the [addImageIcon] and [getImageSource] is [ImageSource.camera].
   ///
-  /// If null by default [CameraDevice.front] will be used.
-  final Future<CameraDevice> Function()? getPreferredCameraDevice;
+  /// If null by default [CameraDevice.rear] will be used.
+  final GetPreferredCameraDevice? getPreferredCameraDevice;
 
   /// Called when the image fails to load.
   final ImageErrorWidgetBuilder? errorBuilder;
+
+  /// How to inscribe the image into the space allocated during layout.
+  ///
+  /// Default value is [BoxFit.cover].
+  final BoxFit fit;
 
   @override
   State<ImageInput> createState() => _ImageInputState();
@@ -154,6 +172,8 @@ class _ImageInputState extends State<ImageInput> {
           ImagePreviewContainer(
             index: i,
             allowEdit: widget.allowEdit,
+            fit: widget.fit,
+            loadingBuilder: widget.loadingBuilder,
             removeImageIcon: widget.removeImageIcon,
             onImageRemoved: widget.onImageRemoved,
             imageContainerDecoration: widget.imageContainerDecoration,
@@ -167,18 +187,14 @@ class _ImageInputState extends State<ImageInput> {
                   builder: (context) {
                     return ImagePreview(
                       images: imageChangeNotifier,
+                      loadingBuilder: widget.loadingBuilder,
                       initialIndex: i,
                       isEdit: widget.allowEdit,
                       onImageDeleted: widget.onImageRemoved,
-                      // setState(() {
-                      //   _images.removeAt(index);
-                      // });
                     );
                   },
                 ),
-              ).then((value) {
-                // imageChangeNotifier = null;
-              });
+              );
             },
           ),
         ],
@@ -194,21 +210,8 @@ class _ImageInputState extends State<ImageInput> {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () async {
-          ImagePicker()
-              .pickImage(
-            source: await widget.getImageSource?.call() ?? ImageSource.gallery,
-            preferredCameraDevice:
-                await widget.getPreferredCameraDevice?.call() ??
-                    CameraDevice.rear,
-          )
-              .then((value) {
-            if (value != null) {
-              // setState(() {
-              //   _images.add(value);
-              // });
-              widget.onImageSelected?.call(value, _images.length - 1);
-            }
-          });
+          await pickImage(widget.getImageSource,
+              widget.getPreferredCameraDevice, widget.onImageSelected);
         },
         child: Container(
           height: widget.imageSize.height,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/diagnostics.dart';
-import 'package:image_input/widget/getImage/get_image.dart';
+import 'package:image_input/util/get_image.dart';
+import 'package:image_input/util/image_picker_util.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:octo_image/octo_image.dart';
 
@@ -61,7 +62,7 @@ class ProfileAvatar extends StatefulWidget {
   final Color? backgroundColor;
 
   /// Called when the image selected by user.
-  final void Function(XFile? image)? onImageChanged;
+  final OnImageChanged? onImageChanged;
 
   /// Called when the image is removed.
   final void Function()? onImageRemoved;
@@ -108,11 +109,11 @@ class ProfileAvatar extends StatefulWidget {
   ///   },
   /// ),
   /// ```
-  final Future<ImageSource> Function()? getImageSource;
+  final GetImageSource? getImageSource;
 
   /// Called when the user clicks the [addImageIcon] and [getImageSource] is [ImageSource.camera].
   ///
-  /// If null by default [CameraDevice.front] will be used.
+  /// If null by default [CameraDevice.rear] will be used.
   ///
   /// Add the required camera permission in your OS files to use Camera
   ///
@@ -145,7 +146,7 @@ class ProfileAvatar extends StatefulWidget {
   ///   );
   /// },
   /// ```
-  final Future<CameraDevice> Function()? getPreferredCameraDevice;
+  final GetPreferredCameraDevice? getPreferredCameraDevice;
 
   /// This widget will be displayed when the image fails to load.
   final ImageErrorWidgetBuilder? errorBuilder;
@@ -192,9 +193,9 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
         DiagnosticsProperty<Color?>('backgroundColor', widget.backgroundColor));
     properties.add(DiagnosticsProperty<OctoProgressIndicatorBuilder?>(
         'loadingBuilder', widget.loadingBuilder));
-    properties.add(DiagnosticsProperty<Future<ImageSource> Function()?>(
+    properties.add(DiagnosticsProperty<GetImageSource?>(
         'getImageSource', widget.getImageSource));
-    properties.add(DiagnosticsProperty<Future<CameraDevice> Function()?>(
+    properties.add(DiagnosticsProperty<GetPreferredCameraDevice?>(
         'getPreferredCameraDevice', widget.getPreferredCameraDevice));
     properties.add(DiagnosticsProperty<ImageErrorWidgetBuilder?>(
         'errorBuilder', widget.errorBuilder));
@@ -248,9 +249,6 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                     child: GestureDetector(
                       onTap: () {
                         widget.onImageRemoved?.call();
-                        // setState(() {
-                        //   image = null;
-                        // });
                       },
                       child: widget.removeImageIcon,
                     ),
@@ -263,27 +261,10 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                       onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final source = await widget.getImageSource?.call() ??
-                            ImageSource.gallery;
-                        await picker
-                            .pickImage(
-                          source: source,
-                          preferredCameraDevice: source == ImageSource.camera
-                              ? await widget.getPreferredCameraDevice?.call() ??
-                                  CameraDevice.front
-                              : CameraDevice.front,
-                        )
-                            .then<void>(
-                          (XFile? value) {
-                            if (value == null) return;
-                            widget.onImageChanged?.call(value);
-                            // setState(() {
-                            //   if (value != null) {
-                            //     image = value;
-                            //   }
-                            // });
-                          },
+                        await pickImage(
+                          widget.getImageSource,
+                          widget.getPreferredCameraDevice,
+                          widget.onImageChanged,
                         );
                       },
                       child: widget.addImageIcon,

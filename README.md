@@ -1,35 +1,41 @@
 <h1 align="center">Image Input</h1>
-<p align="center">A flutter package which.</p><br>
-
+<p align="center">A pacakage to be used for image input in flutter. It can be used to take image from camera or gallery or from a url.</p>
+<br>
 <p align="center">
-  <a href="https://flutter.dev">
-    <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter"
-      alt="Platform" />
-  </a>
-  <a href="https://pub.dartlang.org/packages/image_input">
-    <img src="https://img.shields.io/pub/v/image_input.svg"
-      alt="Pub Package" />
-  </a>
-  <br>
-  <a href="https://opensource.org/license/bsd-3-clause">
-    <img src="https://img.shields.io/github/license/aakash-pamnani/image_input?color=red"
-      alt="License: BSD-3" />
-  </a>
-  <a href="https://buymeacoffee.com/aakashpp">
-    <img height=20 src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black"
-      alt="Donate" />
-  </a>
+    <a href="https://flutter.dev">
+        <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter" alt="Platform" />
+    </a>
+    <a href="https://pub.dartlang.org/packages/image_input">
+        <img src="https://img.shields.io/pub/v/image_input.svg" alt="Pub Package" />
+    </a>
+    <br>
+    <a href="https://opensource.org/license/bsd-3-clause">
+        <img src="https://img.shields.io/github/license/aakash-pamnani/image_input?color=red" alt="License: BSD-3" />
+    </a>
+    <a href="https://buymeacoffee.com/aakashpp">
+        <img height=20
+            src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black"
+            alt="Donate" />
+    </a>
 </p><br>
 
 <table>
-<tr>
-<td><img src="https://raw.githubusercontent.com/aakash-pamnani/image_input/master/video/profile_avatar.gif" /></td>
-      
-<td><img src="https://raw.githubusercontent.com/aakash-pamnani/image_input/master/video/image_input.gif" /></td>
-      </tr>
-      <tr>
-<td><img src="https://raw.githubusercontent.com/aakash-pamnani/image_input/master/video/list.gif" /></td>
-      <tr>
+    <tr>
+        <td>
+            <p>Profile Avatar</p>
+            <img
+                src="https://raw.githubusercontent.com/aakash-pamnani/image_input/master/video/profile_avatar.gif" />
+        </td>
+        <td>
+            <p>Image Input</p>
+            <img
+                src="https://raw.githubusercontent.com/aakash-pamnani/image_input/master/video/image_input.gif" />
+        </td>
+        <td>
+            <p>Profile Avatar in list</p><img
+                src="https://raw.githubusercontent.com/aakash-pamnani/image_input/master/video/list.gif" />
+        </td>
+    </tr>
 </table>
 <br>
 
@@ -143,7 +149,7 @@ ImageInput(
     images: imageInputImages,
     allowEdit: allowEditImageInput,
     allowMaxImage: 5,
-    onImageSelected: (image, index) {
+    onImageSelected: (image) {
     setState(() {
         imageInputImages.add(image);
     });

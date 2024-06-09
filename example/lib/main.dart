@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_input/image_input.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(const MainApp());
@@ -154,56 +155,9 @@ class _ProfileAvatarExampleState extends State<ProfileAvatarExample> {
                 profileAvatarCurrentImage = null;
               });
             },
-            getImageSource: () {
-              return showDialog<ImageSource>(
-                context: context,
-                builder: (context) {
-                  return SimpleDialog(
-                    children: [
-                      SimpleDialogOption(
-                        child: const Text("Camera"),
-                        onPressed: () {
-                          Navigator.of(context).pop(ImageSource.camera);
-                        },
-                      ),
-                      SimpleDialogOption(
-                          child: const Text("Gallery"),
-                          onPressed: () {
-                            Navigator.of(context).pop(ImageSource.gallery);
-                          }),
-                    ],
-                  );
-                },
-              ).then((value) {
-                return value ?? ImageSource.gallery;
-              });
-            },
-            getPreferredCameraDevice: () {
-              return showDialog<CameraDevice>(
-                context: context,
-                builder: (context) {
-                  return SimpleDialog(
-                    children: [
-                      SimpleDialogOption(
-                        child: const Text("Rear"),
-                        onPressed: () {
-                          Navigator.of(context).pop(CameraDevice.rear);
-                        },
-                      ),
-                      SimpleDialogOption(
-                          child: const Text("Front"),
-                          onPressed: () {
-                            Navigator.of(context).pop(CameraDevice.front);
-                          }),
-                    ],
-                  );
-                },
-              ).then(
-                (value) {
-                  return value ?? CameraDevice.rear;
-                },
-              );
-            },
+            getImageSource: () async => await getImageSource(context),
+            getPreferredCameraDevice: () async =>
+                await getPrefferedCameraDevice(context),
           ),
         ],
       ),
@@ -271,7 +225,10 @@ class _ImageInputExampleState extends State<ImageInputExample> {
               images: imageInputImages,
               allowEdit: allowEditImageInput,
               allowMaxImage: 5,
-              onImageSelected: (image, index) {
+              getPreferredCameraDevice: () async =>
+                  await getPrefferedCameraDevice(context),
+              getImageSource: () async => await getImageSource(context),
+              onImageSelected: (image) {
                 setState(() {
                   imageInputImages.add(image);
                 });
@@ -280,6 +237,11 @@ class _ImageInputExampleState extends State<ImageInputExample> {
                 setState(() {
                   imageInputImages.remove(image);
                 });
+              },
+              loadingBuilder: (context, progress) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               },
             ),
           ),
@@ -393,3 +355,64 @@ List<Person> personsDummyData = [
   Person(name: "Isaac", image: "https://i.imgur.com/PrS3Rq9.jpg"),
   Person(name: "Julia", image: "https://i.imgur.com/4BaA60n.jpg"),
 ];
+
+var getImageSource = (BuildContext context) {
+  return showDialog<ImageSource>(
+    context: context,
+    builder: (context) {
+      return SimpleDialog(
+        children: [
+          SimpleDialogOption(
+            child: const Text("Camera"),
+            onPressed: () {
+              Navigator.of(context).pop(ImageSource.camera);
+            },
+          ),
+          SimpleDialogOption(
+              child: const Text("Gallery"),
+              onPressed: () {
+                Navigator.of(context).pop(ImageSource.gallery);
+              }),
+        ],
+      );
+    },
+  ).then((value) {
+    return value ?? ImageSource.gallery;
+  });
+};
+
+var getPrefferedCameraDevice = (BuildContext context) async {
+  var status = await Permission.camera.request();
+  if (status.isDenied) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Allow Camera Permission"),
+      ),
+    );
+    return null;
+  }
+  return showDialog<CameraDevice>(
+    context: context,
+    builder: (context) {
+      return SimpleDialog(
+        children: [
+          SimpleDialogOption(
+            child: const Text("Rear"),
+            onPressed: () {
+              Navigator.of(context).pop(CameraDevice.rear);
+            },
+          ),
+          SimpleDialogOption(
+              child: const Text("Front"),
+              onPressed: () {
+                Navigator.of(context).pop(CameraDevice.front);
+              }),
+        ],
+      );
+    },
+  ).then(
+    (value) {
+      return value ?? CameraDevice.rear;
+    },
+  );
+};

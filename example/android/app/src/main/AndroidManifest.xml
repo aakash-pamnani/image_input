@@ -1,4 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
         android:label="image_input_example"
         android:name="${applicationName}"

@@ -25,21 +25,25 @@ import 'package:image_picker/image_picker.dart';
 //   }
 // }
 
-
-ImageProvider<Object>? getImageProvider(XFile? image, String? imageUrl) {
+ImageProvider<Object>? getImageProvider(XFile? image, String? imageUrl,
+    {double scale = 1.0}) {
   if (image != null) {
     if (kIsWeb) {
-      return CachedNetworkImageProvider(image.path);
+      return CachedNetworkImageProvider(image.path, scale: scale);
     }
-    return FileImage(File(image.path));
+
+    return FileImage(
+      File(image.path),
+      scale: scale,
+    );
   } else if (imageUrl != null) {
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS ||
         kIsWeb) {
-      return CachedNetworkImageProvider(imageUrl);
+      return CachedNetworkImageProvider(imageUrl, scale: scale);
     } else {
-      return NetworkImage(imageUrl);
+      return NetworkImage(imageUrl, scale: scale);
     }
   } else {
     return null;
